@@ -54,13 +54,13 @@ https://www.mygreatlearning.com/blog/understanding-mutable-and-immutable-in-pyth
 https://docs.djangoproject.com/en/4.0/ref/models/fields/#django.db.models.Field
 
 
--AutoField : IntegerField, auto increments IDs
+- AutoField : IntegerField, auto increments IDs
 
--BigAutoField : A 64-bit integer, much like an AutoField except that it is guaranteed to fit numbers from 1 to 9223372036854775807.
+- BigAutoField : A 64-bit integer, much like an AutoField except that it is guaranteed to fit numbers from 1 to 9223372036854775807.
 
--BooleanField : The default value of BooleanField is None when Field.default isn’t defined.
+- BooleanField : The default value of BooleanField is None when Field.default isn’t defined.
 
--FloatField vs. DecimalField
+- FloatField vs. DecimalField
 The FloatField class is sometimes mixed up with the DecimalField class. 
 Although they both represent real numbers, they represent those numbers differently. 
 FloatField uses Python’s float type internally, while DecimalField uses Python’s Decimal type. 
