@@ -71,7 +71,7 @@ class User(AbstractBaseUser):
 
 class UserProfile(models.Model):
 
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
     introduction = models.TextField("자기 소개")
     birthday = models.DateField("생일")    
 

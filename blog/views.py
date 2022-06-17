@@ -20,6 +20,19 @@ class ArticleView(APIView): # CBV 방식
         return Response({'message': article_titles})
         
     def post(self, request):
+        # title / category / contents를 입력받아서 게시글을 작성하는 기능을 구현해주세요
+        # - 만약 title이 5자 이하라면 게시글을 작성할 수 없다고 리턴해주세요
+        #  - 만약 contents가 20자 이하라면 게시글을 작성할 수 없다고 리턴해주세요
+        #  - 만약 카테고리가 지정되지 않았다면 카테고리를 지정해야 한다고 리턴해주세요
+        title = request.data.get('title', '')
+        if len(title) <= 5:
+            return Response({'message': '제목은 6글자 이상이어야 합니다.'})
+        content = request.data.get('content', '')
+        if len(content) <= 20:
+            return Response({'message': '글 내용은 21글자 이상이어야 합니다.'})
+        category = request.data.get('category', '')
+        
+        article = Article(**request.data).save()
         return Response({'message': 'post method!!'})
 
     def put(self, request):
