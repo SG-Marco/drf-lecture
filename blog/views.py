@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from django.contrib.auth import login, logout, authenticate
 from rest_framework.views import APIView
 from rest_framework import permissions
-from .models import Article
+from .models import Article, Category, Comment
 
 
 # Create your views here.
@@ -30,10 +30,13 @@ class ArticleView(APIView): # CBV 방식
         content = request.data.get('content', '')
         if len(content) <= 20:
             return Response({'message': '글 내용은 21글자 이상이어야 합니다.'})
-        category = request.data.get('category', '')
-        
-        article = Article(**request.data).save()
-        return Response({'message': 'post method!!'})
+        try:    
+            category = Category.objects.get(name=request.data.get('category', ''))
+        except:
+            return Response({'message': '글의 카테고리를 지정해야 합니다.'})
+
+        Article(title=title, content=content, category=category).save()
+        return Response({'message': '작성한 글이 저장되었습니다.'})
 
     def put(self, request):
         return Response({'message': 'put method!!'})

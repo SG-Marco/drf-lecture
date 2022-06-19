@@ -4,6 +4,7 @@ from django.contrib.auth import login, logout, authenticate
 from rest_framework.views import APIView
 from rest_framework import permissions, status
 from user.serializers import UserSerializer
+from user.permissions import RegistedMoreThan5MINUser
 
 '''
 class UserView(APIView): # CBV 방식
@@ -25,7 +26,7 @@ class UserView(APIView): # CBV 방식
 '''
 
 class UserApiView(APIView):
-
+    permission_classes = [RegistedMoreThan5MINUser] # 누구나 view 조회 가능
     # 유저 정보
     def get(self, request):
         # user = request.user
