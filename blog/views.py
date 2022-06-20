@@ -4,19 +4,20 @@ from rest_framework.views import APIView
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from blog.models import Article as ArticleModel
-from ai.permissions import RegistedMoreThan5MINUser
-
+from Django.permissions import RegistedMoreThan5MINUser, IsAdminOrIsJoinedWeekAgoOrIsAuthenticatedReadOnly
+import datetime
 
 class ArticleView(APIView):
     # 로그인 한 사용자의 게시글 목록 return
     # permission_classes = [permissions.IsAuthenticated]
-    permission_classes = [RegistedMoreThan5MINUser]
-
+    # permission_classes = [RegistedMoreThan5MINUser]
+    permission_classes = [IsAdminOrIsJoinedWeekAgoOrIsAuthenticatedReadOnly]
 
     def get(self, request):
         user = request.user
-        
-        articles = ArticleModel.objects.filter(user=user)
+        # articles = ArticleModel.objects.filter(user=user)
+        articles = ArticleModel.objects.filter(post_start_day__lte = datetime.datetime.now().date(), post_end_day__gte = datetime.datetime.now().date()).order_by("-created_at")
+
         titles = [article.title for article in articles] # list 축약 문법
 
         titles = []

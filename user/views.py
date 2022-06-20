@@ -33,8 +33,8 @@ class UserView(APIView):
         return Response({"message": "delete method!!"})
 
 
-class UserApiView(APIView):
-    permission_classes = [RegistedMoreThan5MINUser] # 누구나 view 조회 가능
+class UserAPIView(APIView):
+    # permission_classes = [RegistedMoreThan5MINUser] # 누구나 view 조회 가능
     # 유저 정보
     def get(self, request):
         # user = request.user
