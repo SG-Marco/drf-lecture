@@ -3,27 +3,35 @@ from rest_framework.response import Response
 from django.contrib.auth import login, logout, authenticate
 from rest_framework.views import APIView
 from rest_framework import permissions, status
-from user.serializers import UserSerializer
-from user.permissions import RegistedMoreThan5MINUser
+from user.serializers import UserProfileSerializer, UserSerializer, UserSignupSerializer
+from Django.permissions import RegistedMoreThan5MINUser
 
-'''
-class UserView(APIView): # CBV 방식
-    permission_classes = [permissions.AllowAny] # 누구나 view 조회 가능
-    # permission_classes = [permissions.IsAdminUser] # admin만 view 조회 가능
-    # permission_classes = [permissions.IsAuthenticated] # 로그인 된 사용자만 view 조회 가능
 
+class UserView(APIView):
+    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [RegistedMoreThan5MINUser] # 누구나 view 조회 가능
+    # 사용자 정보 조회
     def get(self, request):
-        return Response({'message': 'get method!!'})
-        
+        return Response(UserSerializer(request.user).data, status=status.HTTP_200_OK)
+
+    # 회원가입
     def post(self, request):
-        return Response({'message': 'post method!!'})
+        serializer = UserSignupSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "회원가입 완료!!"})
+        else:
+            print(serializer.errors)
+            return Response({"message": "가입 실패!!"})
 
+    # 회원 정보 수정
     def put(self, request):
-        return Response({'message': 'put method!!'})
+        return Response({"message": "put method!!"})
 
+    # 회원 탈퇴
     def delete(self, request):
-        return Response({'message': 'delete method!!'})
-'''
+        return Response({"message": "delete method!!"})
+
 
 class UserApiView(APIView):
     permission_classes = [RegistedMoreThan5MINUser] # 누구나 view 조회 가능

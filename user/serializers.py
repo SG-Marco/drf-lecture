@@ -1,23 +1,50 @@
 from rest_framework import serializers
-from .models import User, UserProfile
+
+from blog.models import Category as CategoryModel
+from blog.models import Article as ArticleModel
+from blog.models import Comment as CommentModel
+
+from user.models import User as UserModel
+from user.models import UserProfile as UserProfileModel
+from user.models import Hobby as HobbyModel
+
 from blog.serializers import ArticleSerializer, CommentSerializer
+
+
+class UserSignupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserModel
+        fields = "__all__"
+
+    def create(self, *args, **kwargs):
+        user = super().create(*args, **kwargs)
+        p = user.password
+        user.set_password(p)
+        user.save()
+        return user
+
+    def update(self, *args, **kwargs):
+        user = super().create(*args, **kwargs)
+        p = user.password
+        user.set_password(p)
+        user.save()
+        return user
+
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UserProfile
-        fields = "__all__"
+        model = UserProfileModel
+        fields = ["introduction", "bithday", "age"]
 
 
 class UserSerializer(serializers.ModelSerializer):
     userprofile = UserProfileSerializer()
-    article_set = ArticleSerializer(many=True)
-    comment_set = CommentSerializer(many=True)
+    articles = ArticleSerializer(many=True, source="article_set")
+    comments = CommentSerializer(many=True, source="comment_set")
 
     class Meta:
-        # serializer에 사용될 model, field지정
-        model = User
-        # 모든 필드를 사용하고 싶을 경우 fields = "__all__"로 사용
-        fields = ["username", "email", "fullname", "join_date", "userprofile", "article_set", "comment_set"]
+        model = UserModel
+        fields = ["username", "fullname", "join_date", "userprofile", "articles", "comments"]
 
 
 

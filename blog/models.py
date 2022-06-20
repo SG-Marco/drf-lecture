@@ -1,43 +1,28 @@
-import pstats
 from django.db import models
-from django.conf import settings
 
 # Create your models here.
 class Category(models.Model):
-
-    name = models.CharField("카테고리 이름", max_length=30, default="", unique=True)
+    name = models.CharField("이름", max_length=50)
     description = models.TextField("설명")
-
-    class Meta:
-        pass
 
     def __str__(self):
         return self.name
-
-
+    
 class Article(models.Model):
-
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_DEFAULT, default="탈퇴한 사용자")
-    title = models.CharField("Title", max_length=30)
-    category = models.ManyToManyField("Category", verbose_name="Category")
-    content = models.TextField()
-
-    class Meta:
-        pass
-
+    user = models.ForeignKey('user.User', verbose_name="작성자", on_delete=models.CASCADE)
+    title = models.CharField("제목", max_length=50)
+    category = models.ManyToManyField(Category, verbose_name="카테고리")
+    contents = models.TextField("본문")
+    
     def __str__(self):
-        return f'{self.author.username}/{self.title}'
+        return f"{self.user.username} 님이 작성하신 글입니다."
 
 
 class Comment(models.Model):
-
-    article = models.ForeignKey("Article", on_delete=models.CASCADE)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_DEFAULT, default="탈퇴한 사용자")
-    content = models.TextField()
-
-    class Meta:
-        pass
+    user = models.ForeignKey('user.User', verbose_name="작성자", on_delete=models.CASCADE)
+    article = models.ForeignKey('Article', verbose_name="게시글", on_delete=models.CASCADE)
+    contents = models.TextField("본문")
 
     def __str__(self):
-        return f'{self.author.username}/{self.article.title}/{self.content}'
+        return f"{self.article.title} / {self.contents}"
 
