@@ -4,6 +4,7 @@ from django.utils import timezone
 from rest_framework.exceptions import APIException
 from rest_framework import status
 
+SAFE_METHODS = ('GET', )
 
 class RegistedMoreThan5MINUser(BasePermission):
     """
@@ -24,7 +25,6 @@ class IsAdminOrIsJoinedWeekAgoOrIsAuthenticatedReadOnly(BasePermission):
     """
     admin 사용자는 모두 가능, 로그인 사용자는 조회만 가능
     """
-    SAFE_METHODS = ('GET', )
     message = '접근 권한이 없습니다.'
 
     def has_permission(self, request, view):
@@ -43,6 +43,27 @@ class IsAdminOrIsJoinedWeekAgoOrIsAuthenticatedReadOnly(BasePermission):
             return True
 
         elif user.is_authenticated and request.user.join_date < (timezone.now() - timedelta(days=7)):
+            return True
+        
+        return False
+    
+
+class IsJoinedMoreThan3DaysOrNoAuthenticatedReadOnly(BasePermission):
+    """
+    가입후 3일 이상된 회원은 상품등록 가능, 로그인 안하면 조회만 가능
+    """
+    message = '접근 권한이 없습니다.'
+
+    def has_permission(self, request, view):
+        user = request.user
+
+        if user.is_authenticated and user.is_admin:
+            return True
+
+        elif not user.is_authenticated and request.method in self.SAFE_METHODS:
+            return True
+            
+        elif user.is_authenticated and request.user.join_date < (timezone.now() - timedelta(days=3)):
             return True
         
         return False

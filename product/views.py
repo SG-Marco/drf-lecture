@@ -9,16 +9,22 @@ from rest_framework import permissions, status
 from product.models import Product
 from user.serializers import UserProfileSerializer, UserSerializer, UserSignupSerializer
 from product.serializers import ProductSerializer
-from Django.permissions import RegistedMoreThan5MINUser
+from Django.permissions import RegistedMoreThan5MINUser, IsJoinedMoreThan3DaysOrNoAuthenticatedReadOnly
 import datetime
+from django.db.models.query_utils import Q
 
 
 class ProductView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsJoinedMoreThan3DaysOrNoAuthenticatedReadOnly]
     # permission_classes = [RegistedMoreThan5MINUser] # 누구나 view 조회 가능
     # 상품 조회
     def get(self, request):
-        products = Product.objects.filter(post_start_day__lte = datetime.datetime.now().date(), post_end_day__gte = datetime.datetime.now().date()).order_by("-created_at")
+        today = datetime.datetime.now().date()
+        products = Product.objects.filter(post_start_day__lte = today, post_end_day__gte = today).order_by("-created_at")
+        
+        query = Q(user=request.user) | Q(post_start_day__lte = today, post_end_day__gte = today, is_active=True)
+        products = Product.objects.filter(query)
+        
         return Response(ProductSerializer(products, many=True).data, status=status.HTTP_200_OK)
 
     # 상품 등록
